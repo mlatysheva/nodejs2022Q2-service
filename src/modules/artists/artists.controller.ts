@@ -16,6 +16,7 @@ import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 import { ArtistsService } from './artists.service';
 import { TracksService } from '../tracks/tracks.service';
 import { AlbumsService } from '../albums/albums.service';
+import { FavoritesService } from '../favorites/favorites.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -35,7 +36,8 @@ export class ArtistsController {
   constructor(
     private readonly artistsService: ArtistsService,
     private readonly tracksService: TracksService,
-    private readonly albumsService: AlbumsService, // private readonly favouritesService: FavouritesService,
+    private readonly albumsService: AlbumsService,
+    private readonly favoritesService: FavoritesService,
   ) {}
 
   @Get()
@@ -110,7 +112,7 @@ export class ArtistsController {
     if (!artist) {
       throw new HttpException('Artist not found.', HttpStatus.NOT_FOUND);
     }
-    // this.favouritesService.deleteFavoriteArtist(id);
+    // this.favoritesService.deleteArtistFromFavorites(id);
     this.tracksService.setArtistIdToNull(id);
     this.albumsService.setArtistIdToNull(id);
     this.artistsService.delete(id);

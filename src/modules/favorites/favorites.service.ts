@@ -8,8 +8,6 @@ import {
 import { AlbumsService } from '../albums/albums.service';
 import { ArtistsService } from '../artists/artists.service';
 import { TracksService } from '../tracks/tracks.service';
-import { CreateFavoriteDto } from './dto/create-favorite.dto';
-import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { FavoritesModel } from './entities/favorite.entity';
 import { FavoritesResponse } from './entities/favoriteResponse.entity';
 
@@ -29,13 +27,7 @@ export class FavoritesService {
     private artistsService: ArtistsService,
     @Inject(forwardRef(() => AlbumsService))
     private albumsService: AlbumsService,
-  ) {
-    this.favorites = {
-      artists: [],
-      albums: [],
-      tracks: [],
-    };
-  }
+  ) {}
 
   public addTrackToFavorites(trackId: string) {
     try {
@@ -49,9 +41,8 @@ export class FavoritesService {
         'Track already exists in favorites',
       );
     } else {
-      this.favorites.tracks.push(trackId);
+      return this.favorites.tracks.push(trackId);
     }
-    return trackId;
   }
 
   public addAlbumToFavorites(albumId: string) {
@@ -66,9 +57,8 @@ export class FavoritesService {
         'Album already exists in favorites',
       );
     } else {
-      this.favorites.albums.push(albumId);
+      return this.favorites.albums.push(albumId);
     }
-    return albumId;
   }
 
   public addArtistToFavorites(artistId: string) {
@@ -83,9 +73,8 @@ export class FavoritesService {
         'Artist already exists in favorites',
       );
     } else {
-      this.favorites.artists.push(artistId);
+      return this.favorites.artists.push(artistId);
     }
-    return artistId;
   }
 
   findAll() {
@@ -114,9 +103,10 @@ export class FavoritesService {
     if (!doesExist) {
       throw new UnprocessableEntityException('Track not found');
     }
-    const index = this.favorites.tracks.indexOf(trackId);
-    this.favorites.tracks.splice(index, 1);
-    return trackId;
+    const index = this.favorites.tracks.findIndex((track) => {
+      track === trackId;
+    });
+    return this.favorites.tracks.splice(index, 1);
   }
 
   deleteAlbumFromFavorites(albumId: string) {
@@ -124,9 +114,10 @@ export class FavoritesService {
     if (!doesExist) {
       throw new UnprocessableEntityException('Album not found');
     }
-    const index = this.favorites.albums.indexOf(albumId);
-    this.favorites.albums.splice(index, 1);
-    return albumId;
+    const index = this.favorites.albums.findIndex((album) => {
+      album === albumId;
+    });
+    return this.favorites.albums.splice(index, 1);
   }
 
   deleteArtistFromFavorites(artistId: string) {
@@ -134,8 +125,9 @@ export class FavoritesService {
     if (!doesExist) {
       throw new UnprocessableEntityException('Artist not found');
     }
-    const index = this.favorites.artists.indexOf(artistId);
-    this.favorites.artists.splice(index, 1);
-    return artistId;
+    const index = this.favorites.artists.findIndex((artist) => {
+      artist === artistId;
+    });
+    return this.favorites.artists.splice(index, 1);
   }
 }

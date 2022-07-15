@@ -2,8 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
   Param,
   Delete,
   HttpStatus,
@@ -23,31 +21,31 @@ export class FavoritesController {
     return this.favoritesService.findAll();
   }
 
-  @Post('/track/:id')
-  @HttpCode(HttpStatus.OK)
+  @Post('track/:id')
+  @HttpCode(HttpStatus.CREATED)
   addTrackToFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    this.favoritesService.addTrackToFavorites(id);
+    return this.favoritesService.addTrackToFavorites(id);
   }
 
   @Post('/album/:id')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   addAlbumToFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    this.favoritesService.addAlbumToFavorites(id);
+    return this.favoritesService.addAlbumToFavorites(id);
   }
 
   @Post('/artist/:id')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   addArtistToFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    this.favoritesService.addArtistToFavorites(id);
+    return this.favoritesService.addArtistToFavorites(id);
   }
 
   @Delete('/track/:id')
@@ -56,7 +54,7 @@ export class FavoritesController {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    this.favoritesService.deleteTrackFromFavorites(id);
+    return this.favoritesService.deleteTrackFromFavorites(id);
   }
 
   @Delete('/album/:id')
@@ -65,7 +63,7 @@ export class FavoritesController {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    this.favoritesService.deleteAlbumFromFavorites(id);
+    return this.favoritesService.deleteAlbumFromFavorites(id);
   }
 
   @Delete('/artist/:id')
@@ -74,6 +72,6 @@ export class FavoritesController {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    this.favoritesService.deleteArtistFromFavorites(id);
+    return this.favoritesService.deleteArtistFromFavorites(id);
   }
 }

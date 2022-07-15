@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 import { TracksService } from './tracks.service';
+import { FavoritesService } from '../favorites/favorites.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackModel } from './entities/track.entity';
@@ -31,7 +32,8 @@ import {
 @ApiTags('track')
 export class TracksController {
   constructor(
-    private readonly tracksService: TracksService, // private readonly favouritesService: FavouritesService,
+    private readonly tracksService: TracksService,
+    private readonly favoritesService: FavoritesService,
   ) {}
 
   @Get()
@@ -108,7 +110,7 @@ export class TracksController {
     if (!track) {
       throw new HttpException('Track not found.', HttpStatus.NOT_FOUND);
     }
-    // this.favouritesService.deleteFavoriteTrack(id);
+    // this.favoritesService.deleteTrackFromFavorites(id);
     this.tracksService.delete(id);
   }
 
