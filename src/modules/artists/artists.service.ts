@@ -39,12 +39,6 @@ export class ArtistsService {
       ...updatedArtist,
     };
     this.logger.log('Updating the artist');
-    // this.artists[index] = Object.assign(artist, updatedArtist);
-    // this.artists[index] = {
-    //   id,
-    //   name: updatedArtist.name || this.artists[index].name,
-    //   grammy: updatedArtist.grammy || this.artists[index].grammy,
-    // };
     return this.artists[index];
   }
 
