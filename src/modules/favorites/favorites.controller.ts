@@ -6,22 +6,74 @@ import {
   Patch,
   Param,
   Delete,
+  HttpStatus,
+  HttpCode,
+  HttpException,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { CreateFavoriteDto } from './dto/create-favorite.dto';
-import { UpdateFavoriteDto } from './dto/update-favorite.dto';
+import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 
-@Controller('favorites')
+@Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
-  @Post()
-  create(@Body() createFavouriteDto: CreateFavoriteDto) {
-    // return this.favoritesService.create(createFavouriteDto);
-  }
-
   @Get()
+  @HttpCode(HttpStatus.OK)
   findAll() {
     return this.favoritesService.findAll();
+  }
+
+  @Post('/track/:id')
+  @HttpCode(HttpStatus.OK)
+  addTrackToFavorites(@Param('id') id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
+    }
+    this.favoritesService.addTrackToFavorites(id);
+  }
+
+  @Post('/album/:id')
+  @HttpCode(HttpStatus.OK)
+  addAlbumToFavorites(@Param('id') id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
+    }
+    this.favoritesService.addAlbumToFavorites(id);
+  }
+
+  @Post('/artist/:id')
+  @HttpCode(HttpStatus.OK)
+  addArtistToFavorites(@Param('id') id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
+    }
+    this.favoritesService.addArtistToFavorites(id);
+  }
+
+  @Delete('/track/:id')
+  @HttpCode(204)
+  deleteTrackFromFavorites(@Param('id') id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
+    }
+    this.favoritesService.deleteTrackFromFavorites(id);
+  }
+
+  @Delete('/album/:id')
+  @HttpCode(204)
+  deleteAlbumFromFavorites(@Param('id') id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
+    }
+    this.favoritesService.deleteAlbumFromFavorites(id);
+  }
+
+  @Delete('/artist/:id')
+  @HttpCode(204)
+  deleteArtistFromFavorites(@Param('id') id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
+    }
+    this.favoritesService.deleteArtistFromFavorites(id);
   }
 }
