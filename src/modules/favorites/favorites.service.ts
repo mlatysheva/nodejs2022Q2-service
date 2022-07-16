@@ -87,16 +87,20 @@ export class FavoritesService {
     const tracks = this.favorites.tracks;
     const albums = this.favorites.albums;
     const artists = this.favorites.artists;
-    for (const track of tracks) {
-      favoritesResponse.tracks.push(this.tracksService.findOne(track));
+    try {
+      for (const track of tracks) {
+        favoritesResponse.tracks.push(this.tracksService.findOne(track));
+      }
+      for (const album of albums) {
+        favoritesResponse.albums.push(this.albumsService.findOne(album));
+      }
+      for (const artist of artists) {
+        favoritesResponse.artists.push(this.artistsService.findOne(artist));
+      }
+      return favoritesResponse;
+    } catch {
+      throw new BadRequestException('No favorites found');
     }
-    for (const album of albums) {
-      favoritesResponse.albums.push(this.albumsService.findOne(album));
-    }
-    for (const artist of artists) {
-      favoritesResponse.artists.push(this.artistsService.findOne(artist));
-    }
-    return favoritesResponse;
   }
 
   deleteTrackFromFavorites(trackId: string) {

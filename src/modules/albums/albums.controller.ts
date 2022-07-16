@@ -11,6 +11,8 @@ import {
   HttpException,
   HttpStatus,
   ValidationPipe,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 import { AlbumsService } from './albums.service';
@@ -83,11 +85,5 @@ export class AlbumsController {
       throw new HttpException('Album not found.', HttpStatus.NOT_FOUND);
     }
     this.albumsService.delete(id);
-  }
-
-  @Delete('artist/:id')
-  @HttpCode(204)
-  setArtistIdToNull(@Param() id) {
-    this.albumsService.setArtistIdToNull(id);
   }
 }

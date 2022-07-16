@@ -16,7 +16,7 @@ export class TracksService {
 
   public findOne(id: string): TrackModel {
     const Track: TrackModel = this.tracks.find((Track) => Track.id === id);
-    this.logger.log('Getting the track by id');
+    this.logger.log(`Getting track ${id}`);
     return Track;
   }
 
@@ -37,24 +37,17 @@ export class TracksService {
       ...track,
       ...updatedTrack,
     };
-    this.logger.log('Updating the track');
-    // this.tracks[index] = Object.assign(Track, updatedTrack);
-    // this.tracks[index] = {
-    //   id,
-    //   name: updatedTrack.name || this.Tracks[index].name,
-    //   grammy: updatedTrack.grammy || this.Tracks[index].grammy,
-    // };
+    this.logger.log(`Updating the track ${id}`);
     return this.tracks[index];
   }
 
   public delete(id: string): void {
     const index: number = this.tracks.findIndex((Track) => Track.id === id);
-    this.logger.log('Deleting the track');
+    this.logger.log(`Deleting the track ${id}`);
     this.tracks.splice(index, 1);
   }
 
   public setArtistIdToNull(artistId: string): void {
-    console.log(`we are in the setArtistIdToNull method`);
     this.tracks.forEach((track) => {
       if (track.artistId === artistId) {
         track.artistId = null;
@@ -63,11 +56,7 @@ export class TracksService {
   }
 
   public setAlbumIdToNull(albumId: string): void {
-    this.logger.log(`we are in the setAlbumIdToNull method, tracks are:`);
-    this.logger.log(this.tracks);
     this.tracks.forEach((track) => {
-      this.logger.log(`track.albumId: ${track.albumId}`);
-      this.logger.log(`albumId: ${albumId}`);
       if (track.albumId === albumId) {
         track.albumId = null;
       }
