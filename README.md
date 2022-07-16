@@ -25,7 +25,7 @@ This is a Nestjs RESTful music library application that can do the following:
 - The is a swagger file showing available endpoints and required request body and response body.
 After starting the app on port (4000 as default) you can open in your browser OpenAPI documentation by typing http://localhost:4000/doc/
 
-[![Postman Requests](https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/develop/screenshot_favorites.png)]
+[![Postman Requests](https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/develop/screenshot_postman.png)]
 ## Testing
 
 Once the application is running, open new terminal and enter:

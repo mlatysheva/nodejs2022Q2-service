@@ -18,14 +18,6 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AlbumModel } from './entities/album.entity';
-import {
-  ApiOkResponse,
-  ApiNotFoundResponse,
-  ApiBadRequestResponse,
-  ApiNoContentResponse,
-  ApiCreatedResponse,
-  ApiUnprocessableEntityResponse,
-} from '@nestjs/swagger';
 
 @Controller('album')
 @ApiTags('album')
@@ -34,17 +26,12 @@ export class AlbumsController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ description: 'Albums retrieved successfully.' })
   public findAll(): Array<AlbumModel> {
     return this.albumsService.findAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ description: 'Album retrieved successfully.' })
-  @ApiNotFoundResponse({ description: 'Album not found.' })
-  @ApiBadRequestResponse({ description: 'Invalid UUID.' })
-  @ApiNoContentResponse({ description: 'Album entry is empty.' })
   public findOne(@Param('id') id: string): AlbumModel {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
@@ -61,10 +48,6 @@ export class AlbumsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiCreatedResponse({ description: 'Album created successfully.' })
-  @ApiUnprocessableEntityResponse({
-    description: 'Album name already exists.',
-  })
   public create(
     @Body(new ValidationPipe()) createdAlbum: CreateAlbumDto,
   ): AlbumModel {
@@ -73,11 +56,6 @@ export class AlbumsController {
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ description: 'Album updated successfully.' })
-  @ApiNotFoundResponse({ description: 'Album not found.' })
-  @ApiUnprocessableEntityResponse({
-    description: 'Album name already exists.',
-  })
   public update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body(new ValidationPipe()) updatedAlbum: UpdateAlbumDto,
@@ -94,8 +72,6 @@ export class AlbumsController {
 
   @Delete(':id')
   @HttpCode(204)
-  @ApiOkResponse({ description: 'Album deleted successfully.' })
-  @ApiNotFoundResponse({ description: 'Album not found.' })
   public delete(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): void {
@@ -106,7 +82,6 @@ export class AlbumsController {
     if (!album) {
       throw new HttpException('Album not found.', HttpStatus.NOT_FOUND);
     }
-    // this.favouritesService.deleteFavoriteAlbum(id);
     this.albumsService.delete(id);
   }
 
