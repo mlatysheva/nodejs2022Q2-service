@@ -4,6 +4,9 @@ import {
   Logger,
   forwardRef,
   UnprocessableEntityException,
+  HttpException,
+  HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { AlbumsService } from '../albums/albums.service';
 import { ArtistsService } from '../artists/artists.service';
@@ -106,7 +109,7 @@ export class FavoritesService {
     const index = this.favorites.tracks.findIndex((track) => {
       track === trackId;
     });
-    return this.favorites.tracks.splice(index, 1);
+    this.favorites.tracks = this.favorites.tracks.splice(index, 1);
   }
 
   deleteAlbumFromFavorites(albumId: string) {
@@ -117,17 +120,26 @@ export class FavoritesService {
     const index = this.favorites.albums.findIndex((album) => {
       album === albumId;
     });
-    return this.favorites.albums.splice(index, 1);
+    this.favorites.albums = this.favorites.albums.splice(index, 1);
   }
 
   deleteArtistFromFavorites(artistId: string) {
-    const doesExist = this.favorites.artists.includes(artistId);
-    if (!doesExist) {
-      throw new UnprocessableEntityException('Artist not found');
+    // const doesExist = this.favorites.artists.includes(artistId);
+    // if (!doesExist) {
+    //   throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
+    // }
+    // const index = this.favorites.artists.findIndex((artist) => {
+    //   artist === artistId;
+    // });
+    // this.favorites.artists = this.favorites.artists.splice(index, 1);
+    const index = this.favorites.artists.indexOf(artistId);
+    if (index === -1) {
+      throw new BadRequestException(
+        `Artist ${artistId} not found in favorites`,
+      );
+    } else {
+      this.favorites.artists.splice(index, 1);
+      return `Artist ${artistId} successfully deleted from favorites`;
     }
-    const index = this.favorites.artists.findIndex((artist) => {
-      artist === artistId;
-    });
-    return this.favorites.artists.splice(index, 1);
   }
 }

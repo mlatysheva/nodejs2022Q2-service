@@ -30,7 +30,7 @@ export class FavoritesController {
     return this.favoritesService.addTrackToFavorites(id);
   }
 
-  @Post('/album/:id')
+  @Post('album/:id')
   @HttpCode(HttpStatus.CREATED)
   addAlbumToFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
@@ -39,7 +39,7 @@ export class FavoritesController {
     return this.favoritesService.addAlbumToFavorites(id);
   }
 
-  @Post('/artist/:id')
+  @Post('artist/:id')
   @HttpCode(HttpStatus.CREATED)
   addArtistToFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
@@ -48,7 +48,7 @@ export class FavoritesController {
     return this.favoritesService.addArtistToFavorites(id);
   }
 
-  @Delete('/track/:id')
+  @Delete('track/:id')
   @HttpCode(204)
   deleteTrackFromFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
@@ -57,7 +57,7 @@ export class FavoritesController {
     return this.favoritesService.deleteTrackFromFavorites(id);
   }
 
-  @Delete('/album/:id')
+  @Delete('album/:id')
   @HttpCode(204)
   deleteAlbumFromFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
@@ -66,7 +66,7 @@ export class FavoritesController {
     return this.favoritesService.deleteAlbumFromFavorites(id);
   }
 
-  @Delete('/artist/:id')
+  @Delete('artist/:id')
   @HttpCode(204)
   deleteArtistFromFavorites(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
