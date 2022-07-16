@@ -4,8 +4,6 @@ import {
   Logger,
   forwardRef,
   UnprocessableEntityException,
-  HttpException,
-  HttpStatus,
   BadRequestException,
 } from '@nestjs/common';
 import { AlbumsService } from '../albums/albums.service';
@@ -102,44 +100,35 @@ export class FavoritesService {
   }
 
   deleteTrackFromFavorites(trackId: string) {
-    const doesExist = this.favorites.tracks.includes(trackId);
-    if (!doesExist) {
-      throw new UnprocessableEntityException('Track not found');
+    const index = this.favorites.tracks.indexOf(trackId);
+    if (index === -1) {
+      throw new BadRequestException(`Artist ${trackId} not found.`);
+    } else {
+      this.favorites.tracks = this.favorites.tracks.filter((track) => {
+        track !== trackId;
+      });
     }
-    const index = this.favorites.tracks.findIndex((track) => {
-      track === trackId;
-    });
-    this.favorites.tracks = this.favorites.tracks.splice(index, 1);
   }
 
   deleteAlbumFromFavorites(albumId: string) {
-    const doesExist = this.favorites.albums.includes(albumId);
-    if (!doesExist) {
-      throw new UnprocessableEntityException('Album not found');
+    const index = this.favorites.albums.indexOf(albumId);
+    if (index === -1) {
+      throw new BadRequestException(`Artist ${albumId} not found.`);
+    } else {
+      this.favorites.albums = this.favorites.albums.filter((album) => {
+        album !== albumId;
+      });
     }
-    const index = this.favorites.albums.findIndex((album) => {
-      album === albumId;
-    });
-    this.favorites.albums = this.favorites.albums.splice(index, 1);
   }
 
   deleteArtistFromFavorites(artistId: string) {
-    // const doesExist = this.favorites.artists.includes(artistId);
-    // if (!doesExist) {
-    //   throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
-    // }
-    // const index = this.favorites.artists.findIndex((artist) => {
-    //   artist === artistId;
-    // });
-    // this.favorites.artists = this.favorites.artists.splice(index, 1);
     const index = this.favorites.artists.indexOf(artistId);
     if (index === -1) {
-      throw new BadRequestException(
-        `Artist ${artistId} not found in favorites`,
-      );
+      throw new BadRequestException(`Artist ${artistId} not found.`);
     } else {
-      this.favorites.artists.splice(index, 1);
-      return `Artist ${artistId} successfully deleted from favorites`;
+      this.favorites.artists = this.favorites.artists.filter((artist) => {
+        artist !== artistId;
+      });
     }
   }
 }

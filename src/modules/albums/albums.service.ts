@@ -4,14 +4,11 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 import { v4 as uuid } from 'uuid';
 import { AlbumModel } from './entities/album.entity';
 import { TracksService } from '../tracks/tracks.service';
-import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
 export class AlbumsService {
   @Inject(forwardRef(() => TracksService))
   private tracksService: TracksService;
-  @Inject(forwardRef(() => FavoritesService))
-  private favoritesService: FavoritesService;
   private albums: Array<AlbumModel> = [];
   private logger = new Logger(AlbumsService.name);
 
@@ -58,7 +55,6 @@ export class AlbumsService {
   public delete(id: string): void {
     const index: number = this.albums.findIndex((album) => album.id === id);
     this.logger.log('Deleting the album');
-    // this.favoritesService.deleteAlbumFromFavorites(id);
     this.tracksService.setAlbumIdToNull(id);
     this.albums.splice(index, 1);
   }

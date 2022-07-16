@@ -7,6 +7,7 @@ import {
   HttpStatus,
   HttpCode,
   HttpException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { uuIdValidateV4 } from '../../utils/uuIdValidate';
