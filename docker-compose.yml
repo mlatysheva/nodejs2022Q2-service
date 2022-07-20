@@ -7,7 +7,7 @@ services:
       container_name: music_app
       build:
         context: .
-        dockerfile: ./Dockerfile
+        dockerfile: ./docker/music_app/Dockerfile
       environment:
         PORT: "${PORT}"
         POSTGRES_USER: "${POSTGRES_USER}"
@@ -30,7 +30,7 @@ services:
     container_name: music_db
     build:
       context: .
-      dockerfile: ./music_db/Dockerfile
+      dockerfile: ./docker/music_db/Dockerfile
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
