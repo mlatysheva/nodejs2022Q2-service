@@ -5,13 +5,13 @@ services:
 
   postgres:
     image: music_postgres
-    container_name: postgres
+    container_name: music_postgres_container
     build:
       context: .
       dockerfile: ./postgres/Dockerfile
     restart: always
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/music_postgres_container/data
     networks:
       - postgres
     env_file:
@@ -20,7 +20,7 @@ services:
       - '8080:8080'
   app:
     image: music_app
-    container_name: musiclibrary
+    container_name: music_app_container
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -36,9 +36,9 @@ services:
 
 volumes:
   postgres:
-    name: 'postgres'
+    name: 'music_postgres_volume'
   app:
-    name: 'musiclibrary'
+    name: 'music_app_volume'
 networks:
   postgres:
     name: 'musiclibrary_network'
