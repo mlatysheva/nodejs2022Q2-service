@@ -2,44 +2,56 @@ version: '3.8'
 services:
 
   # Docker connection string: postgres://postgres:postgres@localhost:8080/
+  music_app:
+      image: music_app
+      container_name: music_app
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+      environment:
+        PORT: "${PORT}"
+        POSTGRES_USER: "${POSTGRES_USER}"
+        POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+        POSTGRES_HOST: db
+        POSTGRES_PORT: "${POSTGRES_PORT}"
+        POSTGRES_DB: "${POSTGRES_DB}"
+      depends_on:
+        - music_db
+      volumes:
+        - music_app:/var/lib/music_app/data
+      networks:
+        - music_network
+      restart: always
+      ports:
+        - "${PORT}:${PORT}"
 
-  postgres:
-    image: music_postgres
-    container_name: music_postgres_container
+  music_db:
+    image: music_db
+    container_name: music_db
     build:
       context: .
-      dockerfile: ./postgres/Dockerfile
+      dockerfile: ./music_db/Dockerfile
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
     restart: always
     volumes:
-      - postgres:/var/lib/music_postgres_container/data
+      - music_db:/var/lib/music_db/data
     networks:
-      - postgres
-    env_file:
-      - docker.env
+      - music_network
     ports:
-      - '8080:8080'
-  app:
-    image: music_app
-    container_name: music_app_container
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - '4000:4000'
-    depends_on:
-      - postgres
-    volumes:
-      - app:/var/lib/app/data
-    networks:
-      - postgres
-    restart: always
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
 
 volumes:
-  postgres:
-    name: 'music_postgres_volume'
-  app:
+  music_db:
+    driver: local
+    name: 'music_db_volume'
+  music_app:
+    driver: local
     name: 'music_app_volume'
+    
 networks:
-  postgres:
-    name: 'musiclibrary_network'
+  music_network:
+    name: 'music_network'
     driver: bridge
