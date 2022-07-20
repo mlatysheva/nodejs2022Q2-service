@@ -1,49 +1,45 @@
-version: '3.4'
-
+version: '3.8'
 services:
-  homelibrary:
-    container_name: homelibrary
-    image: homelibrary
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      # NODE_ENV: production
-      PORT: "${PORT}"
-      POSTGRES_USER: "${POSTGRES_USER}"
-    ports:
-      - 4000:4000
-networks:
+
+  # Docker connection string: postgres://postgres:postgres@localhost:8080/
+
   postgres:
-    name: postgres
-    driver: bridge
-
-container_name: nest_REST_API
-build: 
-  context:  .
-  dockerfile: ./postgres/Dockerfile
-
-  app:
+    image: music_postgres
+    container_name: postgres
     build:
       context: .
       dockerfile: ./postgres/Dockerfile
     restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - postgres
+    env_file:
+      - docker.env
+    ports:
+      - '8080:8080'
+  app:
+    image: music_app
+    container_name: musiclibrary
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - '4000:4000'
     depends_on:
       - postgres
-    ports:
-      - 8080:8080
     volumes:
-      - app:/src/app/
-      - postgres:/postgres
-  
-  postgres:
-    build:
-      context: ./postgres
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=root
-  volumes:
-    postgres:
-    app:
+      - app:/var/lib/app/data
+    networks:
+      - postgres
+    restart: always
 
+volumes:
+  postgres:
+    name: 'postgres'
+  app:
+    name: 'musiclibrary'
+networks:
+  postgres:
+    name: 'musiclibrary_network'
+    driver: bridge

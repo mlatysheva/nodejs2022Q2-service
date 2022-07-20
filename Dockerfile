@@ -8,7 +8,8 @@ RUN npm install && mv node_modules ../
 COPY . .
 COPY .env.example .env
 # EXPOSE ${PORT}
-EXPOSE 8080
+EXPOSE ${PORT}
 RUN chown -R node /usr/src/app
 USER node
 CMD ["npm", "run", "start:dev"]
+
