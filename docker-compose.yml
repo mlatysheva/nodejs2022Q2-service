@@ -2,11 +2,48 @@ version: '3.4'
 
 services:
   homelibrary:
+    container_name: homelibrary
     image: homelibrary
     build:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: production
+      # NODE_ENV: production
+      PORT: "${PORT}"
+      POSTGRES_USER: "${POSTGRES_USER}"
     ports:
       - 4000:4000
+networks:
+  postgres:
+    name: postgres
+    driver: bridge
+
+container_name: nest_REST_API
+build: 
+  context:  .
+  dockerfile: ./postgres/Dockerfile
+
+  app:
+    build:
+      context: .
+      dockerfile: ./postgres/Dockerfile
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    volumes:
+      - app:/src/app/
+      - postgres:/postgres
+  
+  postgres:
+    build:
+      context: ./postgres
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=root
+  volumes:
+    postgres:
+    app:
+
