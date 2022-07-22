@@ -12,7 +12,7 @@ import { Reflector } from '@nestjs/core';
 dotenv.config({ path: resolve(cwd(), '.env') });
 
 async function bootstrap() {
-  const port = process.env.PORT || 4000;
+  const port = process.env.PORT || 4040;
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
