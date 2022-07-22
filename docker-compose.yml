@@ -1,20 +1,18 @@
 version: '3.8'
-services:
 
-  # Docker connection string: postgres://postgres:postgres@localhost:8080/
+services:
   music_app:
       image: music_app
       container_name: music_app
       build:
         context: .
         dockerfile: ./docker/music_app/Dockerfile
-      environment:
-        PORT: "${PORT}"
-        POSTGRES_USER: "${POSTGRES_USER}"
-        POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-        POSTGRES_HOST: db
-        POSTGRES_PORT: "${POSTGRES_PORT}"
-        POSTGRES_DB: "${POSTGRES_DB}"
+      # environment:
+      #   PORT: "${PORT}"
+      #   POSTGRES_USER: "${POSTGRES_USER}"
+      #   POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      #   POSTGRES_PORT: "${POSTGRES_PORT}"
+      #   POSTGRES_DB: "${POSTGRES_DB}"
       depends_on:
         - music_db
       volumes:
@@ -23,33 +21,33 @@ services:
         - music_network
       restart: unless-stopped
       ports:
-        - "4000:${PORT}"
+        - ${PORT}:${PORT}
 
   music_db:
-    image: music_db
+    image: postgres:14-alpine
     container_name: music_db
     build:
       context: .
       dockerfile: ./docker/music_db/Dockerfile
-    environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "${POSTGRES_DB}"
     restart: unless-stopped
+    environment:
+        POSTGRES_USER: "${POSTGRES_USER}"
+        POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+        POSTGRES_PORT: "${POSTGRES_PORT}"
     volumes:
-      - music_db:/usr/music_db/data
+      - music_db:/var/lib/postgresql/data
     networks:
       - music_network
     ports:
-      - "5434:${POSTGRES_PORT}"
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
 volumes:
   music_db:
     driver: local
-    name: 'music_db_volume'
+    name: 'music_db'
   music_app:
     driver: local
-    name: 'music_app_volume'
+    name: 'music_app'
     
 networks:
   music_network:
