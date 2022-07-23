@@ -35,9 +35,9 @@ services:
       POSTGRES_DB: "${POSTGRES_DB}"
     depends_on:
       - music_db
-    volumes:
-      - music_app:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+      # - music_app:/usr/src/app/dist
+    #   - /usr/src/app/node_modules
     networks:
       - music_network
     restart: unless-stopped
@@ -50,9 +50,9 @@ volumes:
   music_db:
     driver: local
     name: 'music_db'
-  music_app:
-    driver: local
-    name: 'music_app'
+  # music_app:
+    # driver: local
+    # name: 'music_app'
     
 networks:
   music_network:
