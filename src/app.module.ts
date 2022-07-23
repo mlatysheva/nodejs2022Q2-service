@@ -4,6 +4,7 @@ import { ArtistsModule } from './modules/artists/artists.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { TracksModule } from './modules/tracks/tracks.module';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UsersModule } from './modules/users/users.module';
     AlbumsModule,
     TracksModule,
     FavoritesModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

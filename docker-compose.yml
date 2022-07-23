@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+
+  music_db:
+    image: music_db
+    container_name: music_db
+    build:
+      context: .
+      dockerfile: ./docker/music_db/Dockerfile
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    volumes:
+      - music_db:/var/lib/postgresql/data
+    networks:
+      - music_network
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+
+  music_app:
+    image: music_app
+    container_name: music_app
+    build:
+      context: .
+      dockerfile: ./docker/music_app/Dockerfile
+    environment:
+      PORT: "${PORT}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_PORT: "${POSTGRES_PORT}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    depends_on:
+      - music_db
+    volumes:
+      - music_app:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - music_network
+    restart: unless-stopped
+    links:
+      - music_db
+    ports:
+      - ${PORT}:${PORT}
+
+volumes:
+  music_db:
+    driver: local
+    name: 'music_db'
+  music_app:
+    driver: local
+    name: 'music_app'
+    
+networks:
+  music_network:
+    name: 'music_network'
+    driver: bridge
