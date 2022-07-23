@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   music_db:
-    image: postgres:alpine
+    image: music_db
     container_name: music_db
     build:
       context: .
@@ -22,7 +22,7 @@ services:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
   music_app:
-    # image: music_app
+    image: music_app
     container_name: music_app
     build:
       context: .
