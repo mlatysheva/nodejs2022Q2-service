@@ -30,12 +30,12 @@ In this part we added docker where we deployed the app and the database that wil
 - The application is running on port 4000
 - The postgres database is running on port 5432
 
-[! Docker images(https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/containerization-docker/screenshot_images_sizes.png)]
+[![Docker images](https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/containerization-docker/screenshot_images_sizes.png)]
 
 - The image of the application is 375 Mb
 - There is a `user-defined bridge`
 - The app container restarts after crashing
 - The built image has been pushed to Docker Hub at https://hub.docker.com/repository/docker/mlatysheva/music_app
 
-[! Vulnerabilities Check for the app (https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/containerization-docker/screenshot_app_vulnerabilities.png)]
-[! Vulnerabilities Check for the database (https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/containerization-docker/screenshot_db_vulnerabilities.png)]
+[![Vulnerabilities Check for the app](https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/containerization-docker/screenshot_app_vulnerabilities.png)]
+[![Vulnerabilities Check for the database](https://raw.githubusercontent.com/mlatysheva/nodejs2022Q2-service/containerization-docker/screenshot_db_vulnerabilities.png)]
