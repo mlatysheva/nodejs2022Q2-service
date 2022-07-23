@@ -18,7 +18,7 @@
     "docker:stop": "docker compose stop",
     "docker:scan:app": "docker scan music_app",
     "docker:scan:db": "docker scan music_db",
-    "docker:test": "docker run -p 4000:4000 music_app",
+    "docker:test": "docker-compose exec music_app npm run test",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --config ./test/jest-e2e.json",
     "test:auth": "cross-env TEST_MODE=auth jest --config ./test/jest-e2e.json",
@@ -48,7 +48,6 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.4.0",
-    "typeorm": "^0.3.7",
     "uuid": "^8.3.2",
     "yaml": "^2.1.1"
   },
