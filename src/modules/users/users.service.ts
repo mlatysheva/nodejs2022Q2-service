@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   Logger,
@@ -6,24 +7,26 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserModel } from './entities/user.entity';
-import { v4 as uuid } from 'uuid';
 import { User } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
+import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 
 @Injectable()
 export class UsersService {
-  private logger = new Logger(UsersService.name);
-
   prisma = new PrismaClient();
 
   convertToUser(user: User) {
     const { createdAt, updatedAt } = user;
+    const createdAtToInt = createdAt.getTime();
+    let updatedAtToInt = updatedAt.getTime();
+    if (updatedAtToInt - createdAtToInt < 3) {
+      updatedAtToInt = createdAtToInt;
+    }
     delete user.password;
     return {
       ...user,
-      createdAt: createdAt.getTime(),
-      updatedAt: updatedAt.getTime(),
+      createdAt: createdAtToInt,
+      updatedAt: updatedAtToInt,
     };
   }
 
@@ -37,6 +40,9 @@ export class UsersService {
   };
 
   findOne = async (id: string) => {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
     const user = await this.prisma.user.findFirst({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -58,6 +64,9 @@ export class UsersService {
 
   update = async (id: string, updatedUserData: UpdateUserDto) => {
     const user = await this.prisma.user.findFirst({ where: { id } });
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -68,7 +77,6 @@ export class UsersService {
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
-        ...updatedUserData,
         password: newPassword,
         version: user.version + 1,
         updatedAt: new Date(),
