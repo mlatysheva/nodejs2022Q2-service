@@ -1,8 +1,8 @@
-FROM node:16-alpine
+FROM node:lts-alpine
 # ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "./"]
-RUN npm install &&  npm cache clean --force
+RUN npm install
 COPY . .
 COPY .env.example .env
 EXPOSE ${PORT}
