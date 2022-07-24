@@ -8,4 +8,6 @@ COPY .env.example .env
 EXPOSE ${PORT}
 # RUN chown -R node /usr/src/app
 # USER node
+# RUN npx prisma generate
+# RUN npx prisma migrate reset
 CMD ["npm", "run", "start:dev"]

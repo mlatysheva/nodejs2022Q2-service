@@ -24,17 +24,18 @@ export class UsersController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    return await this.usersService.findAll();  
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    const user = this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id);
+    console.dir(user);
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
@@ -43,20 +44,20 @@ export class UsersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  public create(@Body() createdUser: CreateUserDto): UserModel {
-    return this.usersService.create(createdUser);
+  async create(@Body() createdUser: CreateUserDto) {
+    return await this.usersService.create(createdUser);
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  public update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updatedUser: UpdateUserDto,
   ) {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    const user = this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id);
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
@@ -66,21 +67,19 @@ export class UsersController {
         message: 'The passwords entered do not match.',
         error: 'Forbidden',
       });
-    return this.usersService.update(id, updatedUser);
+    return await this.usersService.update(id, updatedUser);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  public delete(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): void {
+  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     if (!uuIdValidateV4(id)) {
       throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
     }
-    const user = this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id);
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
-    this.usersService.delete(id);
+    return await this.usersService.delete(id);
   }
 }

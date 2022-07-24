@@ -16,7 +16,7 @@ model User {
   password String
   version Int @default(autoincrement())
   createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Album {
