@@ -78,7 +78,7 @@ export class FavoritesService {
     }
   }
 
-  findAll() {
+  async findAll() {
     const favoritesResponse: FavoritesResponse = {
       artists: [],
       albums: [],
@@ -92,7 +92,7 @@ export class FavoritesService {
         favoritesResponse.tracks.push(this.tracksService.findOne(track));
       }
       for (const album of albums) {
-        favoritesResponse.albums.push(this.albumsService.findOne(album));
+        favoritesResponse.albums.push(await this.albumsService.findOne(album));
       }
       for (const artist of artists) {
         favoritesResponse.artists.push(this.artistsService.findOne(artist));

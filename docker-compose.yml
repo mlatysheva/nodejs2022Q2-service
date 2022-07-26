@@ -27,6 +27,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/music_app/Dockerfile
+      # dockerfile: Dockerfile.dev
     environment:
       PORT: "${PORT}"
       POSTGRES_USER: "${POSTGRES_USER}"
@@ -36,8 +37,8 @@ services:
     depends_on:
       - music_db
     # volumes:
-      # - music_app:/usr/src/app/dist
-    #   - /usr/src/app/node_modules
+    #   - ./:/usr/src/app
+    #   - exclude:/usr/src/app/node_modules/
     networks:
       - music_network
     restart: unless-stopped
@@ -50,9 +51,7 @@ volumes:
   music_db:
     driver: local
     name: 'music_db'
-  # music_app:
-    # driver: local
-    # name: 'music_app'
+  # exclude:
     
 networks:
   music_network:
