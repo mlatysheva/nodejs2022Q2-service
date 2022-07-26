@@ -48,8 +48,9 @@ export class AlbumsController {
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body(new ValidationPipe()) updatedAlbum: UpdateAlbumDto,
+    @Body() updatedAlbum: UpdateAlbumDto,
   ) {
+    console.dir(updatedAlbum);
     return this.albumsService.update(id, updatedAlbum);
   }
 

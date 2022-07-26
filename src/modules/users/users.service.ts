@@ -30,16 +30,16 @@ export class UsersService {
     };
   }
 
-  findAll = async () => {
+  async findAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany();
     const formattedUsers = [];
     for (const user of users) {
       formattedUsers.push(this.convertToUser(user));
     }
     return formattedUsers;
-  };
+  }
 
-  findOne = async (id: string) => {
+  async findOne(id: string) {
     if (!uuIdValidateV4(id)) {
       throw new BadRequestException('Invalid UUID.');
     }
@@ -48,9 +48,9 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return this.convertToUser(user);
-  };
+  }
 
-  create = async (user: CreateUserDto) => {
+  async create(user: CreateUserDto) {
     const newUser = await this.prisma.user.create({
       data: {
         login: user.login,
@@ -60,9 +60,9 @@ export class UsersService {
     });
 
     return this.convertToUser(newUser);
-  };
+  }
 
-  update = async (id: string, updatedUserData: UpdateUserDto) => {
+  async update(id: string, updatedUserData: UpdateUserDto) {
     const user = await this.prisma.user.findFirst({ where: { id } });
     if (!uuIdValidateV4(id)) {
       throw new BadRequestException('Invalid UUID.');
@@ -83,13 +83,13 @@ export class UsersService {
       },
     });
     return this.convertToUser(updatedUser);
-  };
+  }
 
-  delete = async (id: string) => {
+  async delete(id: string) {
     const user = await this.prisma.user.findFirst({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     await this.prisma.user.delete({ where: { id } });
-  };
+  }
 }

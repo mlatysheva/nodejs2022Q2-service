@@ -12,7 +12,7 @@ import { Reflector } from '@nestjs/core';
 dotenv.config({ path: resolve(cwd(), '.env') });
 
 async function bootstrap() {
-  const port = process.env.PORT || 4040;
+  const port = process.env.PORT || 4000;
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
@@ -29,6 +29,7 @@ async function bootstrap() {
   // const DOC_API = await readFile(join(rootDirname, 'doc', 'api.yaml'), 'utf-8');
   // const document = parse(DOC_API);
   // SwaggerModule.setup('doc', app, document);
+  console.log(`Server running on port ${port}`);
   await app.listen(port);
 }
 bootstrap();

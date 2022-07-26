@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   ValidateIf,
+  IsUUID,
 } from 'class-validator';
 import { InputType } from '@nestjs/graphql';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -12,17 +13,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class CreateAlbumDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ type: String })
   name: string;
 
   @IsNumber()
   @IsNotEmpty()
-  @ApiProperty({ type: Number })
   year: number;
 
-  @ApiPropertyOptional({ type: String })
-  @IsOptional()
-  @IsString()
+  @IsUUID('4')
   @ValidateIf((_, value) => value !== null)
   artistId: string | null;
 }
