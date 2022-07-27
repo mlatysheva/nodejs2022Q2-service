@@ -95,7 +95,9 @@ export class FavoritesService {
         favoritesResponse.albums.push(await this.albumsService.findOne(album));
       }
       for (const artist of artists) {
-        favoritesResponse.artists.push(this.artistsService.findOne(artist));
+        favoritesResponse.artists.push(
+          await this.artistsService.findOne(artist),
+        );
       }
       return favoritesResponse;
     } catch {

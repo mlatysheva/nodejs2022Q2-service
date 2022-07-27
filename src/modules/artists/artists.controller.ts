@@ -19,73 +19,42 @@ import { AlbumsService } from '../albums/albums.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistModel } from './entities/artist.entity';
+import { Artist } from '@prisma/client';
 
 @Controller('artist')
 export class ArtistsController {
-  constructor(
-    private readonly artistsService: ArtistsService,
-    private readonly tracksService: TracksService,
-    private readonly albumsService: AlbumsService,
-  ) {}
+  constructor(private readonly artistsService: ArtistsService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  public findAll(): Array<ArtistModel> {
-    return this.artistsService.findAll();
+  async findAll() {
+    return await this.artistsService.findAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  public findOne(@Param('id') id: string): ArtistModel {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    const artist = this.artistsService.findOne(id);
-    if (!artist) {
-      throw new HttpException('Artist not found.', HttpStatus.NOT_FOUND);
-    }
-    if (Object(artist).id === undefined) {
-      throw new HttpException('Artist entry is empty.', HttpStatus.NO_CONTENT);
-    }
-    return artist;
+  async findOne(@Param('id') id: string): Promise<Artist> {
+    return await this.artistsService.findOne(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  public create(@Body() createdArtist: CreateArtistDto): ArtistModel {
-    return this.artistsService.create(createdArtist);
+  async create(@Body() createdArtistData: CreateArtistDto): Promise<Artist> {
+    return this.artistsService.create(createdArtistData);
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  public update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body(new ValidationPipe()) updatedArtist: UpdateArtistDto,
+    @Body(new ValidationPipe()) updatedArtistData: UpdateArtistDto,
   ) {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    const artist = this.artistsService.findOne(id);
-    if (!artist) {
-      throw new HttpException('Artist not found.', HttpStatus.NOT_FOUND);
-    }
-    return this.artistsService.update(id, updatedArtist);
+    return await this.artistsService.update(id, updatedArtistData);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  public delete(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): void {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    const artist = this.artistsService.findOne(id);
-    if (!artist) {
-      throw new HttpException('Artist not found.', HttpStatus.NOT_FOUND);
-    }
-    this.tracksService.setArtistIdToNull(id);
-    this.albumsService.setArtistIdToNull(id);
-    this.artistsService.delete(id);
+  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    return await this.artistsService.delete(id);
   }
 }

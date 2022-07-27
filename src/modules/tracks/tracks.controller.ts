@@ -35,10 +35,7 @@ export class TracksController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string) {
-    const track = await this.tracksService.findOne(id);
-    console.log(`in track controller track is ${track}`);
-    console.dir(track);
-    return track;
+    return await this.tracksService.findOne(id);
   }
 
   @Post()

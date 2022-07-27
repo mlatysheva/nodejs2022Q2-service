@@ -1,8 +1,12 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { v4 as uuid } from 'uuid';
-import { TrackModel } from './entities/track.entity';
 import { Track } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import { FavoritesService } from '../favorites/favorites.service';
@@ -22,7 +26,6 @@ export class TracksService {
   ) {}
 
   prisma = new PrismaClient();
-  private logger = new Logger(TracksService.name);
 
   async findAll() {
     return await this.prisma.track.findMany();
@@ -67,7 +70,6 @@ export class TracksService {
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-    // await this.favoritesService.deleteTrackFromFavorites(id);
     await this.prisma.track.delete({ where: { id } });
   }
 
