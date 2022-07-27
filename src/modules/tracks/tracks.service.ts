@@ -1,65 +1,92 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { v4 as uuid } from 'uuid';
 import { TrackModel } from './entities/track.entity';
+import { Track } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { FavoritesService } from '../favorites/favorites.service';
+import { AlbumsService } from '../albums/albums.service';
+import { ArtistsService } from '../artists/artists.service';
+import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 
 @Injectable()
 export class TracksService {
-  private tracks: Array<TrackModel> = [];
+  constructor(
+    @Inject(forwardRef(() => AlbumsService))
+    private albumsService: AlbumsService,
+    @Inject(forwardRef(() => ArtistsService))
+    private artistsService: ArtistsService,
+    @Inject(forwardRef(() => FavoritesService))
+    private favoritesService: FavoritesService,
+  ) {}
+
+  prisma = new PrismaClient();
   private logger = new Logger(TracksService.name);
 
-  public findAll(): Array<TrackModel> {
-    this.logger.log('Getting all tracks');
-    return this.tracks;
+  async findAll() {
+    return await this.prisma.track.findMany();
   }
 
-  public findOne(id: string): TrackModel {
-    const Track: TrackModel = this.tracks.find((Track) => Track.id === id);
-    this.logger.log(`Getting track ${id}`);
-    return Track;
+  async findOne(id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    const track = await this.prisma.track.findFirst({ where: { id } });
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+    return track;
   }
 
-  public create(track: CreateTrackDto): TrackModel {
-    const newTrack: TrackModel = {
-      ...track,
-      id: uuid(),
-    };
-    this.tracks.push(newTrack);
-    this.logger.log(`Track with id ${newTrack.id} created`);
+  async create(trackData: CreateTrackDto) {
+    const newTrack: Track = await this.prisma.track.create({
+      data: {
+        ...trackData,
+      },
+    });
     return newTrack;
   }
 
-  public update(id: string, updatedTrack: UpdateTrackDto): TrackModel {
-    const track: TrackModel = this.tracks.find((Track) => Track.id === id);
-    const index: number = this.tracks.indexOf(track);
-    this.tracks[index] = {
-      ...track,
-      ...updatedTrack,
-    };
-    this.logger.log(`Updating the track ${id}`);
-    return this.tracks[index];
+  async update(id: string, updatedTrackData: UpdateTrackDto) {
+    await this.findOne(id);
+    const updatedTrack = await this.prisma.track.update({
+      where: { id },
+      data: {
+        ...updatedTrackData,
+      },
+    });
+    return updatedTrack;
   }
 
-  public delete(id: string): void {
-    const index: number = this.tracks.findIndex((Track) => Track.id === id);
-    this.logger.log(`Deleting the track ${id}`);
-    this.tracks.splice(index, 1);
+  async delete(id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException(`Invalid UUID.`);
+    }
+    const track = await this.prisma.track.findFirst({ where: { id } });
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+    // await this.favoritesService.deleteTrackFromFavorites(id);
+    await this.prisma.track.delete({ where: { id } });
   }
 
-  public setArtistIdToNull(artistId: string): void {
-    this.tracks.forEach((track) => {
+  async setArtistIdToNull(artistId: string): Promise<void> {
+    const tracks = await this.findAll();
+    for (const track of tracks) {
       if (track.artistId === artistId) {
         track.artistId = null;
+        // this.update(artistId, track);
       }
-    });
+    }
   }
 
-  public setAlbumIdToNull(albumId: string): void {
-    this.tracks.forEach((track) => {
+  async setAlbumIdToNull(albumId: string) {
+    const tracks = await this.findAll();
+    for (const track of tracks) {
       if (track.albumId === albumId) {
         track.albumId = null;
       }
-    });
+    }
   }
 }

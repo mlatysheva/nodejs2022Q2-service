@@ -9,7 +9,6 @@ import {
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { v4 as uuid } from 'uuid';
-import { AlbumModel } from './entities/album.entity';
 import { Album } from '@prisma/client';
 import { TracksService } from '../tracks/tracks.service';
 import { PrismaClient } from '@prisma/client';
@@ -18,13 +17,14 @@ import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
 export class AlbumsService {
-  @Inject(forwardRef(() => TracksService))
-  private tracksService: TracksService;
-  @Inject(forwardRef(() => FavoritesService))
-  private favoritesService: FavoritesService;
-  prisma = new PrismaClient();
+  constructor(
+    @Inject(forwardRef(() => TracksService))
+    private tracksService: TracksService,
+    @Inject(forwardRef(() => FavoritesService))
+    private favoritesService: FavoritesService,
+  ) {}
 
-  private logger = new Logger(AlbumsService.name);
+  prisma = new PrismaClient();
 
   async findAll(): Promise<Album[]> {
     return await this.prisma.album.findMany();
@@ -34,8 +34,8 @@ export class AlbumsService {
     if (!uuIdValidateV4(id)) {
       throw new BadRequestException('Invalid UUID.');
     }
-    const album: Album = await this.prisma.album.findUnique({
-      where: { id: id },
+    const album: Album = await this.prisma.album.findFirst({
+      where: { id },
     });
     if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
@@ -43,23 +43,45 @@ export class AlbumsService {
     return album;
   }
 
-  async create(album: CreateAlbumDto): Promise<Album> {
+  async create(albumData: CreateAlbumDto): Promise<Album> {
     const newAlbum: Album = await this.prisma.album.create({
       data: {
         id: uuid(),
-        ...album,
+        ...albumData,
       },
     });
     return newAlbum;
   }
 
-  async update(id: string, updatedAlbum: UpdateAlbumDto): Promise<Album> {
-    await this.findOne(id);
-    const updatedAlbumEntity: Album = await this.prisma.album.update({
-      where: { id: id },
-      data: { ...updatedAlbum },
+  async update(id: string, updatedAlbumData: UpdateAlbumDto): Promise<Album> {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    const album = await this.prisma.album.findFirst({ where: { id } });
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
+    const compoundAlbum = Object.assign(album, updatedAlbumData);
+    if (updatedAlbumData.artistId) {
+      const artist = await this.prisma.artist.findFirst({
+        where: { id: updatedAlbumData.artistId },
+      });
+      if (!artist) {
+        throw new NotFoundException(
+          `Artist with id ${compoundAlbum.artistId} not found`,
+        );
+      }
+    }
+    const updatedAlbum = await this.prisma.album.update({
+      where: { id },
+      data: {
+        name: compoundAlbum.name,
+        year: compoundAlbum.year,
+        artistId: compoundAlbum.artistId,
+      },
+      // data: { ...updatedAlbumData },
     });
-    return updatedAlbumEntity;
+    return updatedAlbum;
   }
 
   async setArtistIdToNull(artistId: string): Promise<void> {
@@ -67,16 +89,21 @@ export class AlbumsService {
     for (const album of albums) {
       if (album.artistId === artistId) {
         album.artistId = null;
-        this.update(album.id, album);
+        // this.update(artistId, album);
       }
     }
+    // albums.forEach((album) => {
+    //   if (album.artistId === artistId) {
+    //     const updateAlbumDto = new UpdateAlbumDto();
+    //     updateAlbumDto.artistId = null;
+    //     this.update(artistId, updateAlbumDto);
+    //   }
+    // });
   }
 
   async delete(id: string): Promise<void> {
-    if (!uuIdValidateV4(id)) {
-      throw new NotFoundException('Invalid UUID.');
-    }
     await this.findOne(id);
+    await this.tracksService.setAlbumIdToNull(id);
     await this.prisma.album.delete({ where: { id } });
   }
 }

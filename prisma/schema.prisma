@@ -45,9 +45,9 @@ model Track {
   name String
   duration Int
   artistId String?
-  artists Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   albumId String?
-  albums Album? @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  album Album? @relation(fields: [albumId], references: [id], onDelete: SetNull)
   favoriteId String?
   favs Favorite? @relation(fields: [favoriteId], references: [id], onDelete: SetNull)
 }

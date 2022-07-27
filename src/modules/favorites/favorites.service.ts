@@ -89,7 +89,7 @@ export class FavoritesService {
     const artists = this.favorites.artists;
     try {
       for (const track of tracks) {
-        favoritesResponse.tracks.push(this.tracksService.findOne(track));
+        favoritesResponse.tracks.push(await this.tracksService.findOne(track));
       }
       for (const album of albums) {
         favoritesResponse.albums.push(await this.albumsService.findOne(album));
@@ -106,7 +106,7 @@ export class FavoritesService {
   deleteTrackFromFavorites(trackId: string) {
     const index = this.favorites.tracks.indexOf(trackId);
     if (index === -1) {
-      throw new BadRequestException(`Artist ${trackId} not found.`);
+      throw new BadRequestException(`Track ${trackId} not found.`);
     } else {
       this.favorites.tracks = this.favorites.tracks.filter((track) => {
         track !== trackId;
@@ -117,7 +117,7 @@ export class FavoritesService {
   deleteAlbumFromFavorites(albumId: string) {
     const index = this.favorites.albums.indexOf(albumId);
     if (index === -1) {
-      throw new BadRequestException(`Artist ${albumId} not found.`);
+      throw new BadRequestException(`Album ${albumId} not found.`);
     } else {
       this.favorites.albums = this.favorites.albums.filter((album) => {
         album !== albumId;
