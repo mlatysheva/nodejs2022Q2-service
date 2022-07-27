@@ -50,20 +50,9 @@ export class AlbumsController {
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updatedAlbum: UpdateAlbumDto,
-    @Res() response: Response,
+    @Body() updatedAlbumData: UpdateAlbumDto,
   ) {
-    console.log(`in controller id is ${id}`);
-    console.log(`in controller updated album data`);
-    console.dir(updatedAlbum);
-    const updatedAlbumResponse = await this.albumsService.update(
-      id,
-      updatedAlbum,
-    );
-    console.log(`updated album response`);
-    console.dir(updatedAlbumResponse);
-    console.dir(response.json);
-    return updatedAlbumResponse;
+    return this.albumsService.update(id, updatedAlbumData);
   }
 
   @Delete(':id')

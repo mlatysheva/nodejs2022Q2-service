@@ -62,7 +62,13 @@ export class ArtistsService {
   }
 
   async delete(id: string) {
-    await this.findOne(id);
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    const artist = await this.findOne(id);
+    if (!artist) {
+      throw new NotFoundException(`Artist with id ${id} not found`);
+    }
     await this.prisma.artist.delete({ where: { id } });
   }
 }

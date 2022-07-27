@@ -53,31 +53,30 @@ export class AlbumsService {
     return newAlbum;
   }
 
-  async update(id: string, updatedAlbumData: UpdateAlbumDto): Promise<Album> {
-    if (!uuIdValidateV4(id)) {
-      throw new BadRequestException('Invalid UUID.');
-    }
-    const album = await this.prisma.album.findFirst({ where: { id } });
-    if (!album) {
-      throw new NotFoundException(`Album with id ${id} not found`);
-    }
-    const compoundAlbum = Object.assign(album, updatedAlbumData);
-    if (updatedAlbumData.artistId) {
-      const artist = await this.prisma.artist.findFirst({
-        where: { id: updatedAlbumData.artistId },
-      });
-      if (!artist) {
-        throw new NotFoundException(
-          `Artist with id ${compoundAlbum.artistId} not found`,
-        );
-      }
-    }
+  async update(id: string, updatedAlbumData: UpdateAlbumDto) {
+    await this.findOne(id);
+    // if (!uuIdValidateV4(id)) {
+    //   throw new BadRequestException('Invalid UUID.');
+    // }
+    // const album = await this.prisma.album.findFirst({ where: { id } });
+    // if (!album) {
+    //   throw new NotFoundException(`Album with id ${id} not found`);
+    // }
+    // const compoundAlbum = Object.assign(album, updatedAlbumData);
+    // if (updatedAlbumData.artistId) {
+    //   const artist = await this.prisma.artist.findFirst({
+    //     where: { id: updatedAlbumData.artistId },
+    //   });
+    //   if (!artist) {
+    //     throw new NotFoundException(
+    //       `Artist with id ${compoundAlbum.artistId} not found`,
+    //     );
+    //   }
+    // }
     const updatedAlbum = await this.prisma.album.update({
       where: { id },
       data: {
-        name: compoundAlbum.name,
-        year: compoundAlbum.year,
-        artistId: compoundAlbum.artistId,
+        ...updatedAlbumData,
       },
       // data: { ...updatedAlbumData },
     });
