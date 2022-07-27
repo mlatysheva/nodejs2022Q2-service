@@ -70,6 +70,7 @@ export class TracksService {
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
+    console.log(`we are in tracks service delete`);
     await this.prisma.track.delete({ where: { id } });
   }
 
@@ -78,7 +79,7 @@ export class TracksService {
     for (const track of tracks) {
       if (track.artistId === artistId) {
         track.artistId = null;
-        // this.update(artistId, track);
+        //  this.update(artistId, track);
       }
     }
   }

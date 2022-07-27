@@ -8,20 +8,13 @@ import {
   Delete,
   HttpCode,
   ParseUUIDPipe,
-  HttpException,
   HttpStatus,
   ValidationPipe,
-  Inject,
-  forwardRef,
-  Res,
 } from '@nestjs/common';
-import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AlbumModel } from './entities/album.entity';
-import { Response } from 'express';
 
 @Controller('album')
 @ApiTags('album')

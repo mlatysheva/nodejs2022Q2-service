@@ -55,30 +55,11 @@ export class AlbumsService {
 
   async update(id: string, updatedAlbumData: UpdateAlbumDto) {
     await this.findOne(id);
-    // if (!uuIdValidateV4(id)) {
-    //   throw new BadRequestException('Invalid UUID.');
-    // }
-    // const album = await this.prisma.album.findFirst({ where: { id } });
-    // if (!album) {
-    //   throw new NotFoundException(`Album with id ${id} not found`);
-    // }
-    // const compoundAlbum = Object.assign(album, updatedAlbumData);
-    // if (updatedAlbumData.artistId) {
-    //   const artist = await this.prisma.artist.findFirst({
-    //     where: { id: updatedAlbumData.artistId },
-    //   });
-    //   if (!artist) {
-    //     throw new NotFoundException(
-    //       `Artist with id ${compoundAlbum.artistId} not found`,
-    //     );
-    //   }
-    // }
     const updatedAlbum = await this.prisma.album.update({
       where: { id },
       data: {
         ...updatedAlbumData,
       },
-      // data: { ...updatedAlbumData },
     });
     return updatedAlbum;
   }
@@ -88,7 +69,7 @@ export class AlbumsService {
     for (const album of albums) {
       if (album.artistId === artistId) {
         album.artistId = null;
-        // this.update(artistId, album);
+        this.update(artistId, album);
       }
     }
     // albums.forEach((album) => {
@@ -101,8 +82,14 @@ export class AlbumsService {
   }
 
   async delete(id: string): Promise<void> {
-    await this.findOne(id);
-    await this.tracksService.setAlbumIdToNull(id);
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException(`Invalid UUID.`);
+    }
+    const album = await this.prisma.album.findFirst({ where: { id } });
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
     await this.prisma.album.delete({ where: { id } });
+    await this.tracksService.setAlbumIdToNull(id);
   }
 }

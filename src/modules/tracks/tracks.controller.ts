@@ -8,23 +8,16 @@ import {
   Delete,
   HttpCode,
   ParseUUIDPipe,
-  HttpException,
   HttpStatus,
-  ValidationPipe,
 } from '@nestjs/common';
-import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 import { TracksService } from './tracks.service';
 import { FavoritesService } from '../favorites/favorites.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { TrackModel } from './entities/track.entity';
 
 @Controller('track')
 export class TracksController {
-  constructor(
-    private readonly tracksService: TracksService,
-    private readonly favoritesService: FavoritesService,
-  ) {}
+  constructor(private readonly tracksService: TracksService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)

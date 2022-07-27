@@ -31,79 +31,43 @@ export class FavoritesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll() {
-    return this.favoritesService.findAll();
+  async findAll() {
+    return await this.favoritesService.findAll();
   }
 
   @Post('track/:id')
   @HttpCode(HttpStatus.CREATED)
-  addTrackToFavorites(@Param('id') id: string) {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    if (!this.tracksService.findOne(id)) {
-      throw new UnprocessableEntityException('Track not found.');
-    }
-    return this.favoritesService.addTrackToFavorites(id);
+  async addTrackToFavorites(@Param('id') id: string) {
+    return await this.favoritesService.addTrackToFavorites(id);
   }
 
   @Post('album/:id')
   @HttpCode(HttpStatus.CREATED)
-  addAlbumToFavorites(@Param('id') id: string) {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    if (!this.albumsService.findOne(id)) {
-      throw new UnprocessableEntityException('Album not found.');
-    }
-    return this.favoritesService.addAlbumToFavorites(id);
+  async addAlbumToFavorites(@Param('id') id: string) {
+    return await this.favoritesService.addAlbumToFavorites(id);
   }
 
   @Post('artist/:id')
   @HttpCode(HttpStatus.CREATED)
-  addArtistToFavorites(@Param('id') id: string) {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    if (!this.artistsService.findOne(id)) {
-      throw new UnprocessableEntityException('Artist not found.');
-    }
-    return this.favoritesService.addArtistToFavorites(id);
+  async addArtistToFavorites(@Param('id') id: string) {
+    return await this.favoritesService.addArtistToFavorites(id);
   }
 
   @Delete('track/:id')
   @HttpCode(204)
-  deleteTrackFromFavorites(@Param('id') id: string) {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    if (!this.tracksService.findOne(id)) {
-      throw new UnprocessableEntityException('Track not found.');
-    }
-    return this.favoritesService.deleteTrackFromFavorites(id);
+  async deleteTrackFromFavorites(@Param('id') id: string) {
+    return await this.favoritesService.deleteTrackFromFavorites(id);
   }
 
   @Delete('album/:id')
   @HttpCode(204)
-  deleteAlbumFromFavorites(@Param('id') id: string) {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    if (!this.albumsService.findOne(id)) {
-      throw new UnprocessableEntityException('Album not found.');
-    }
-    return this.favoritesService.deleteAlbumFromFavorites(id);
+  async deleteAlbumFromFavorites(@Param('id') id: string) {
+    return await this.favoritesService.deleteAlbumFromFavorites(id);
   }
 
   @Delete('artist/:id')
   @HttpCode(204)
-  deleteArtistFromFavorites(@Param('id') id: string) {
-    if (!uuIdValidateV4(id)) {
-      throw new HttpException('Invalid UUID.', HttpStatus.BAD_REQUEST);
-    }
-    if (!this.artistsService.findOne(id)) {
-      throw new UnprocessableEntityException('Artist not found.');
-    }
-    return this.favoritesService.deleteArtistFromFavorites(id);
+  async deleteArtistFromFavorites(@Param('id') id: string) {
+    return await this.favoritesService.deleteArtistFromFavorites(id);
   }
 }
