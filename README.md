@@ -1,12 +1,14 @@
 # Home Library Service
 
-This is the third part of the development of a Nestjs music library application. The app uses `prisma` to query the databased and can do the following:
+This is the third part of the development of a Nestjs music library application. The app now uses `prisma` to query the database and can do the following:
 - create and update the user
 - create, update and delete a track, get a signle track by id and get all tracks
 - create, update and delete an artist, get a single artist by id and get all artists
 - create, update and delete an album, get a single album by id and get all albums
 - add, update and delete a track, artist or album to/from the user's favorites
-In this part we added `prisma` and deployed the database to docker
+
+In this part we added `prisma` and deployed the database to docker.
+
 ## The stack used
 - Docker
 - Prisma
@@ -15,6 +17,7 @@ In this part we added `prisma` and deployed the database to docker
 - Typescript
 - Eslint/Prettier
 - Swagger
+
 ## Downloading, Installing and Running the App
 
 - Clone the repository by running `git clone {repository URL}`
@@ -28,11 +31,9 @@ In this part we added `prisma` and deployed the database to docker
 - To check the docker app for lint errors, run `npm run docker:lint`
 
 Other commands you may find useful:
-- Run `npm run docker:stop` to stop the containers
-- Run `npm run docker:start` to start the containers
-- Run `npm run docker:scan:app` to scan the application for vulnerabilities
-- Run `npm run docker:scan:db` to scan the database for vulnerabilities
-- To run application locally, with the database running in the docker, stop the music_app container in the docker and 
+- `npm run docker:stop` to stop the containers
+- `npm run docker:start` to start the containers
+- To run the application locally, with the database running in the docker, stop the music_app container in the docker and 
   run `npm run start:dev` or `npm run start` in the terminal
 
 - The application is running on port 4000
