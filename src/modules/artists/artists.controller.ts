@@ -8,17 +8,12 @@ import {
   Delete,
   HttpCode,
   ParseUUIDPipe,
-  HttpException,
   HttpStatus,
   ValidationPipe,
 } from '@nestjs/common';
-import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 import { ArtistsService } from './artists.service';
-import { TracksService } from '../tracks/tracks.service';
-import { AlbumsService } from '../albums/albums.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { ArtistModel } from './entities/artist.entity';
 import { Artist } from '@prisma/client';
 
 @Controller('artist')

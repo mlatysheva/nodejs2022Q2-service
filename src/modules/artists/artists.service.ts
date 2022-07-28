@@ -3,13 +3,10 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { v4 as uuid } from 'uuid';
-import { ArtistModel } from './entities/artist.entity';
 import { AlbumsService } from '../albums/albums.service';
 import { FavoritesService } from '../favorites/favorites.service';
 import { Artist, PrismaClient } from '@prisma/client';
@@ -17,13 +14,6 @@ import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 
 @Injectable()
 export class ArtistsService {
-  constructor(
-    @Inject(forwardRef(() => AlbumsService))
-    private albumsService: AlbumsService,
-    @Inject(forwardRef(() => FavoritesService))
-    private favoritesService: FavoritesService,
-  ) {}
-
   prisma = new PrismaClient();
 
   async findAll() {

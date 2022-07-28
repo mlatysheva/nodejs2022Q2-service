@@ -6,28 +6,17 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
-  HttpException,
-  UnprocessableEntityException,
   Inject,
   forwardRef,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 import { TracksService } from '../tracks/tracks.service';
 import { AlbumsService } from '../albums/albums.service';
 import { ArtistsService } from '../artists/artists.service';
 
 @Controller('favs')
 export class FavoritesController {
-  constructor(
-    private readonly favoritesService: FavoritesService,
-    @Inject(forwardRef(() => TracksService))
-    private tracksService: TracksService,
-    @Inject(forwardRef(() => ArtistsService))
-    private artistsService: ArtistsService,
-    @Inject(forwardRef(() => AlbumsService))
-    private albumsService: AlbumsService,
-  ) {}
+  constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
