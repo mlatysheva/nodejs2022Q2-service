@@ -20,6 +20,7 @@
     "docker:scan:app": "docker scan music_app",
     "docker:scan:db": "docker scan music_db",
     "docker:test": "docker-compose exec music_app npm run test",
+    "docker:lint": "docker-compose exec music_app npm run lint",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
