@@ -70,7 +70,6 @@ export class TracksService {
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-    console.log(`we are in tracks service delete`);
     await this.prisma.track.delete({ where: { id } });
   }
 

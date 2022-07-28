@@ -45,7 +45,7 @@ export class AlbumsController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updatedAlbumData: UpdateAlbumDto,
   ) {
-    return this.albumsService.update(id, updatedAlbumData);
+    return await this.albumsService.update(id, updatedAlbumData);
   }
 
   @Delete(':id')
