@@ -1,65 +1,61 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { v4 as uuid } from 'uuid';
-import { TrackModel } from './entities/track.entity';
+import { Track } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 
 @Injectable()
 export class TracksService {
-  private tracks: Array<TrackModel> = [];
-  private logger = new Logger(TracksService.name);
+  prisma = new PrismaClient();
 
-  public findAll(): Array<TrackModel> {
-    this.logger.log('Getting all tracks');
-    return this.tracks;
+  async findAll() {
+    return await this.prisma.track.findMany();
   }
 
-  public findOne(id: string): TrackModel {
-    const Track: TrackModel = this.tracks.find((Track) => Track.id === id);
-    this.logger.log(`Getting track ${id}`);
-    return Track;
+  async findOne(id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    const track = await this.prisma.track.findFirst({ where: { id } });
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+    return track;
   }
 
-  public create(track: CreateTrackDto): TrackModel {
-    const newTrack: TrackModel = {
-      ...track,
-      id: uuid(),
-    };
-    this.tracks.push(newTrack);
-    this.logger.log(`Track with id ${newTrack.id} created`);
+  async create(trackData: CreateTrackDto) {
+    const newTrack: Track = await this.prisma.track.create({
+      data: {
+        ...trackData,
+      },
+    });
     return newTrack;
   }
 
-  public update(id: string, updatedTrack: UpdateTrackDto): TrackModel {
-    const track: TrackModel = this.tracks.find((Track) => Track.id === id);
-    const index: number = this.tracks.indexOf(track);
-    this.tracks[index] = {
-      ...track,
-      ...updatedTrack,
-    };
-    this.logger.log(`Updating the track ${id}`);
-    return this.tracks[index];
-  }
-
-  public delete(id: string): void {
-    const index: number = this.tracks.findIndex((Track) => Track.id === id);
-    this.logger.log(`Deleting the track ${id}`);
-    this.tracks.splice(index, 1);
-  }
-
-  public setArtistIdToNull(artistId: string): void {
-    this.tracks.forEach((track) => {
-      if (track.artistId === artistId) {
-        track.artistId = null;
-      }
+  async update(id: string, updatedTrackData: UpdateTrackDto) {
+    await this.findOne(id);
+    const updatedTrack = await this.prisma.track.update({
+      where: { id },
+      data: {
+        ...updatedTrackData,
+      },
     });
+    return updatedTrack;
   }
 
-  public setAlbumIdToNull(albumId: string): void {
-    this.tracks.forEach((track) => {
-      if (track.albumId === albumId) {
-        track.albumId = null;
-      }
-    });
+  async delete(id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException(`Invalid UUID.`);
+    }
+    const track = await this.prisma.track.findFirst({ where: { id } });
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+    await this.prisma.track.delete({ where: { id } });
   }
 }

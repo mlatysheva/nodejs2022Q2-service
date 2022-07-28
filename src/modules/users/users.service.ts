@@ -1,55 +1,91 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserModel } from './entities/user.entity';
-import { v4 as uuid } from 'uuid';
+import { User } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 
 @Injectable()
 export class UsersService {
-  private users: Array<UserModel> = [];
-  private logger = new Logger(UsersService.name);
+  prisma = new PrismaClient();
 
-  public findAll(): Array<UserModel> {
-    this.logger.log('Getting all users');
-    return this.users;
-  }
-
-  public findOne(id: string): UserModel {
-    const user: UserModel = this.users.find((user) => user.id === id);
-    this.logger.log(`Getting the user by id ${id}`);
-    return user;
-  }
-
-  public create(user: CreateUserDto): UserModel {
-    const newUser = new UserModel({
+  convertToUser(user: User) {
+    const { createdAt, updatedAt } = user;
+    const createdAtToInt = createdAt.getTime();
+    let updatedAtToInt = updatedAt.getTime();
+    if (updatedAtToInt - createdAtToInt < 3) {
+      updatedAtToInt = createdAtToInt;
+    }
+    delete user.password;
+    return {
       ...user,
-      id: uuid(),
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: createdAtToInt,
+      updatedAt: updatedAtToInt,
+    };
+  }
+
+  async findAll(): Promise<User[]> {
+    const users = await this.prisma.user.findMany();
+    const formattedUsers = [];
+    for (const user of users) {
+      formattedUsers.push(this.convertToUser(user));
+    }
+    return formattedUsers;
+  }
+
+  async findOne(id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    const user = await this.prisma.user.findFirst({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return this.convertToUser(user);
+  }
+
+  async create(user: CreateUserDto) {
+    const newUser = await this.prisma.user.create({
+      data: {
+        login: user.login,
+        password: user.password,
+        version: 1,
+      },
     });
 
-    this.users.push(newUser);
-    this.logger.log(`User with id ${newUser.id} created`);
-    return newUser;
+    return this.convertToUser(newUser);
   }
 
-  public update(id: string, updatedUser: UpdateUserDto): UserModel {
-    const user: UserModel = this.users.find((user) => user.id === id);
-    const index: number = this.users.indexOf(user);
-    this.users[index] = new UserModel({
-      ...user,
-      password: updatedUser.newPassword,
-      version: user.version + 1,
-      updatedAt: Date.now(),
+  async update(id: string, updatedUserData: UpdateUserDto) {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    const { oldPassword, newPassword } = updatedUserData;
+    if (oldPassword !== user.password) {
+      throw new ForbiddenException(`Incorrect password given`);
+    }
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: newPassword,
+        version: user.version + 1,
+        updatedAt: new Date(),
+      },
     });
-    this.logger.log(`Updating the user with id ${id}`);
-    return this.users[index];
+    return this.convertToUser(updatedUser);
   }
 
-  public delete(id: string): void {
-    const index: number = this.users.findIndex((User) => User.id === id);
-    this.logger.log(`Deleting the user with id ${id}`);
-    this.users.splice(index, 1);
+  async delete(id: string) {
+    await this.findOne(id);
+    await this.prisma.user.delete({ where: { id } });
   }
 }

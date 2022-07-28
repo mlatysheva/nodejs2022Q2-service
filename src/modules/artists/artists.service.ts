@@ -1,50 +1,60 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { v4 as uuid } from 'uuid';
-import { ArtistModel } from './entities/artist.entity';
+import { Artist, PrismaClient } from '@prisma/client';
+import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 
 @Injectable()
 export class ArtistsService {
-  private artists: Array<ArtistModel> = [];
-  private logger = new Logger(ArtistsService.name);
+  prisma = new PrismaClient();
 
-  public findAll(): Array<ArtistModel> {
-    this.logger.log('Getting all artists');
-    return this.artists;
+  async findAll() {
+    return await this.prisma.artist.findMany();
   }
 
-  public findOne(id: string): ArtistModel {
-    const artist: ArtistModel = this.artists.find((artist) => artist.id === id);
-    this.logger.log('Getting the artist by id');
+  async findOne(id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    const artist = await this.prisma.artist.findFirst({ where: { id } });
+    if (!artist) {
+      throw new NotFoundException(`Artist with id ${id} not found`);
+    }
     return artist;
   }
 
-  public create(artist: CreateArtistDto): ArtistModel {
-    const newArtist: ArtistModel = {
-      ...artist,
-      id: uuid(),
-    };
-
-    this.artists.push(newArtist);
-    this.logger.log('Creating an artist');
+  async create(artistData: CreateArtistDto) {
+    const newArtist: Artist = await this.prisma.artist.create({
+      data: {
+        ...artistData,
+      },
+    });
     return newArtist;
   }
 
-  public update(id: string, updatedArtist: UpdateArtistDto): ArtistModel {
-    const artist: ArtistModel = this.artists.find((artist) => artist.id === id);
-    const index: number = this.artists.indexOf(artist);
-    this.artists[index] = {
-      ...artist,
-      ...updatedArtist,
-    };
-    this.logger.log('Updating the artist');
-    return this.artists[index];
+  async update(id: string, updatedArtistData: UpdateArtistDto) {
+    await this.findOne(id);
+    const updatedArtist = await this.prisma.artist.update({
+      where: { id },
+      data: {
+        ...updatedArtistData,
+      },
+    });
+    return updatedArtist;
   }
 
-  public delete(id: string): void {
-    const index: number = this.artists.findIndex((artist) => artist.id === id);
-    this.logger.log('Deleting the artist');
-    this.artists.splice(index, 1);
+  async delete(id: string) {
+    if (!uuIdValidateV4(id)) {
+      throw new BadRequestException('Invalid UUID.');
+    }
+    const artist = await this.prisma.artist.findFirst({ where: { id } });
+    if (!artist) {
+      throw new NotFoundException(`Artist with id ${id} not found`);
+    }
+    await this.prisma.artist.delete({ where: { id } });
   }
 }
