@@ -1,14 +1,10 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { AlbumsService } from '../albums/albums.service';
-import { FavoritesService } from '../favorites/favorites.service';
 import { Artist, PrismaClient } from '@prisma/client';
 import { uuIdValidateV4 } from '../../utils/uuIdValidate';
 

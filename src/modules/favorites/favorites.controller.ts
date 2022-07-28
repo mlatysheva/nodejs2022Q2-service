@@ -6,13 +6,8 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
-  Inject,
-  forwardRef,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { TracksService } from '../tracks/tracks.service';
-import { AlbumsService } from '../albums/albums.service';
-import { ArtistsService } from '../artists/artists.service';
 
 @Controller('favs')
 export class FavoritesController {

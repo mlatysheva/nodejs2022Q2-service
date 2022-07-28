@@ -1,8 +1,5 @@
 import {
   Injectable,
-  Logger,
-  Inject,
-  forwardRef,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
@@ -10,20 +7,11 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { v4 as uuid } from 'uuid';
 import { Album } from '@prisma/client';
-import { TracksService } from '../tracks/tracks.service';
 import { PrismaClient } from '@prisma/client';
 import { uuIdValidateV4 } from '../../utils/uuIdValidate';
-import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
 export class AlbumsService {
-  constructor(
-    @Inject(forwardRef(() => TracksService))
-    private tracksService: TracksService,
-    @Inject(forwardRef(() => FavoritesService))
-    private favoritesService: FavoritesService,
-  ) {}
-
   prisma = new PrismaClient();
 
   async findAll(): Promise<Album[]> {
