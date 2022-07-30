@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import { uuIdValidateV4 } from '../../utils/uuIdValidate';
+import * as argon from 'argon2';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +22,7 @@ export class UsersService {
     if (updatedAtToInt - createdAtToInt < 3) {
       updatedAtToInt = createdAtToInt;
     }
-    delete user.password;
+    delete user.hash;
     return {
       ...user,
       createdAt: createdAtToInt,
@@ -50,11 +51,12 @@ export class UsersService {
   }
 
   async create(user: CreateUserDto) {
+    const hash = await argon.hash(user.password);
     const newUser = await this.prisma.user.create({
       data: {
         login: user.login,
-        password: user.password,
         version: 1,
+        hash: hash,
       },
     });
 
@@ -70,15 +72,17 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     const { oldPassword, newPassword } = updatedUserData;
-    if (oldPassword !== user.password) {
-      throw new ForbiddenException(`Incorrect password given`);
+    const passwordValid = await argon.verify(user.hash, oldPassword);
+    if (!passwordValid) {
+      throw new ForbiddenException('Incorrect password');
     }
+    const hash = await argon.hash(newPassword);
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
-        password: newPassword,
         version: user.version + 1,
         updatedAt: new Date(),
+        hash: hash,
       },
     });
     return this.convertToUser(updatedUser);

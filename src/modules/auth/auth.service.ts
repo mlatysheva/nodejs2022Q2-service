@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthDto } from './dto';
 import * as argon from 'argon2';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,14 +24,16 @@ export class AuthService {
   }
   async signup(dto: AuthDto) {
     const hash = await argon.hash(dto.password);
+    console.log(`hash: ${hash}`);
 
     try {
       const user = await this.prisma.user.create({
         data: {
           login: dto.login,
-          password: hash,
+          hash: hash,
         },
       });
+      delete user.hash;
       return user;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
