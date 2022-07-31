@@ -9,6 +9,5 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @IsNotEmpty()
   hash: string;
 }

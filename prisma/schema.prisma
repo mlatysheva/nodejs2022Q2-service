@@ -13,7 +13,7 @@ datasource db {
 model User {
   id String @id @default(uuid())
   login String @unique
-  hash String
+  hash String?
   version Int @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
